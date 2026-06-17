@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-playfair: "Playfair Display", Georgia, serif;
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #f8fbfd;
+  color: #102030;
+  font-family: var(--font-inter);
+}
+
+.dark body {
+  background: #06111f;
+  color: #f8fbfd;
+}
+
+::selection {
+  background: rgba(15, 143, 199, 0.25);
+}
+
+@layer components {
+  .section-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .input-field {
+    @apply w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-lago-ink outline-none transition placeholder:text-slate-400 focus:border-lago-blue focus:ring-4 focus:ring-lago-blue/20 dark:border-white/10 dark:bg-white/[0.08] dark:text-white dark:placeholder:text-white/40;
+  }
+
+  .primary-button {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-lago-aqua px-5 py-3 text-sm font-bold text-lago-navy shadow-soft transition hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-4 focus:ring-lago-aqua/30;
+  }
+
+  .secondary-button {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}

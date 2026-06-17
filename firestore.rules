@@ -1,0 +1,61 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isText(value, min, max) {
+      return value is string && value.size() >= min && value.size() <= max;
+    }
+
+    function isEmail(value) {
+      return value is string && value.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+    }
+
+    match /reservations/{reservationId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'name',
+          'phone',
+          'email',
+          'people',
+          'date',
+          'time',
+          'comments',
+          'status',
+          'createdAt'
+        ])
+        && isText(request.resource.data.name, 2, 80)
+        && isText(request.resource.data.phone, 7, 20)
+        && isEmail(request.resource.data.email)
+        && request.resource.data.people is int
+        && request.resource.data.people >= 1
+        && request.resource.data.people <= 40
+        && isText(request.resource.data.date, 10, 10)
+        && isText(request.resource.data.time, 4, 5)
+        && isText(request.resource.data.comments, 2, 500)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if resource.data.approved == true;
+
+      allow create: if request.resource.data.keys().hasOnly([
+          'name',
+          'rating',
+          'comment',
+          'approved',
+          'createdAt'
+        ])
+        && isText(request.resource.data.name, 2, 80)
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && isText(request.resource.data.comment, 2, 500)
+        && request.resource.data.approved == false
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}
