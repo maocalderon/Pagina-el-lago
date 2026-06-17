@@ -6,7 +6,7 @@ import { FiAlertCircle, FiCheckCircle, FiSend } from "react-icons/fi";
 
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
-import { createReview, fetchApprovedReviews } from "@/lib/firestore";
+import { createReview, fetchApprovedReviews } from "@/lib/reviews";
 import type { ApprovedReview } from "@/types/firestore";
 
 export function ReviewsSection() {
@@ -58,22 +58,26 @@ export function ReviewsSection() {
 
     try {
       setIsSubmitting(true);
-      await createReview({
+      const savedReview = await createReview({
         name: name.trim(),
         rating,
         comment: comment.trim()
       });
+      setReviews((currentReviews) => [
+        savedReview,
+        ...currentReviews.filter((review) => review.id !== savedReview.id)
+      ].slice(0, 8));
       setName("");
       setRating(5);
       setComment("");
       setStatus({
         type: "success",
-        text: "Gracias. Tu reseña fue enviada y aparecerá cuando sea aprobada."
+        text: "Gracias. Tu reseña fue publicada correctamente."
       });
     } catch {
       setStatus({
         type: "error",
-        text: "No pudimos guardar la reseña. Revisa la configuración de Firebase."
+        text: "No pudimos guardar la reseña. Revisa la conexión de MySQL en Railway."
       });
     } finally {
       setIsSubmitting(false);
@@ -87,7 +91,7 @@ export function ReviewsSection() {
           <SectionHeading
             eyebrow="Opiniones y Reseñas"
             title="Experiencias de quienes ya nos visitaron"
-            description="Las reseñas publicadas pasan por aprobación para mantener una experiencia confiable y cuidada."
+            description="Comparte tu experiencia y mira las opiniones más recientes de nuestros clientes."
           />
         </Reveal>
 
@@ -95,7 +99,7 @@ export function ReviewsSection() {
           <Reveal>
             <div className="grid gap-5 md:grid-cols-2">
               {isLoading ? (
-                <ReviewEmpty text="Cargando reseñas aprobadas..." />
+                <ReviewEmpty text="Cargando reseñas..." />
               ) : reviews.length > 0 ? (
                 reviews.map((review) => (
                   <article
@@ -108,7 +112,7 @@ export function ReviewsSection() {
                           {review.name}
                         </h3>
                         <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                          Reseña aprobada
+                          Reseña publicada
                         </p>
                       </div>
                       <FaQuoteLeft className="text-lago-blue/40" size={23} />
@@ -120,7 +124,7 @@ export function ReviewsSection() {
                   </article>
                 ))
               ) : (
-                <ReviewEmpty text="Las reseñas aprobadas aparecerán aquí." />
+                <ReviewEmpty text="Las reseñas aparecerán aquí." />
               )}
             </div>
           </Reveal>

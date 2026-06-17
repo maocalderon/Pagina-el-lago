@@ -9,6 +9,7 @@ Página web profesional para Restaurante El Lago, especializado en pescados y ma
 - TypeScript
 - Tailwind CSS
 - Firebase Firestore
+- MySQL
 - Framer Motion
 - React Icons
 
@@ -24,7 +25,7 @@ La app quedará disponible en `http://localhost:3000`.
 
 ## Variables de entorno
 
-Configura `.env.local` con los datos de tu app web de Firebase:
+Configura `.env.local` con los datos de Firebase y MySQL:
 
 ```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
@@ -33,6 +34,8 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+MYSQL_URL=mysql://user:password@host:3306/database
 
 NEXT_PUBLIC_MENU_URL=/menu/carta-el-lago-final.pdf
 ```
@@ -46,7 +49,38 @@ export const MENU_URL =
 
 El PDF no se incrusta en la página. El botón `Ver Menú` abre `NEXT_PUBLIC_MENU_URL` en una pestaña nueva.
 
-## Firebase Firestore
+## Railway MySQL para reseñas
+
+Las reseñas se guardan en MySQL mediante la ruta `/api/reviews`.
+
+En Railway:
+
+1. Abre tu proyecto.
+2. Haz clic en `+ New`.
+3. Selecciona `Database`.
+4. Selecciona `MySQL`.
+5. En el servicio web de Next.js, agrega la variable:
+
+```bash
+MYSQL_URL=${{MySQL.MYSQL_URL}}
+```
+
+Si tu servicio MySQL tiene otro nombre en Railway, reemplaza `MySQL` por ese nombre.
+
+La tabla `reviews` se crea automáticamente al cargar o guardar reseñas. También tienes el SQL manual en `database/reviews.sql`.
+
+Tabla `reviews`:
+
+- `id`: id autoincremental
+- `name`: nombre del cliente
+- `rating`: calificación de 1 a 5
+- `comment`: comentario
+- `approved`: `true` para mostrarse en pantalla
+- `created_at`: fecha de creación
+
+Las reseñas nuevas se guardan como aprobadas para que aparezcan en pantalla inmediatamente.
+
+## Firebase Firestore para reservas
 
 Activa Firestore en modo nativo dentro de Firebase Console.
 
@@ -61,16 +95,6 @@ Colección `reservations`:
 - `comments`: string
 - `status`: `pending`
 - `createdAt`: server timestamp
-
-Colección `reviews`:
-
-- `name`: string
-- `rating`: number, de 1 a 5
-- `comment`: string
-- `approved`: boolean
-- `createdAt`: server timestamp
-
-Las reseñas nuevas se guardan con `approved: false`. Para mostrarlas en la web, cambia `approved` a `true` desde Firebase Console o desde un panel administrativo futuro.
 
 ## Reglas e índices
 

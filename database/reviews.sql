@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS reviews (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(80) NOT NULL,
+  rating TINYINT UNSIGNED NOT NULL,
+  comment VARCHAR(500) NOT NULL,
+  approved BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_reviews_approved_created_at (approved, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
